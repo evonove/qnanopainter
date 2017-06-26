@@ -23,6 +23,7 @@
 #include "qnanopainter.h"
 
 #include <QDebug>
+#include <QGuiApplication>
 #include <QQuickWindow>
 #include <QOpenGLFramebufferObjectFormat>
 #include <QtMath>
@@ -38,6 +39,14 @@
 static QSharedPointer<QNanoPainter> getSharedPainter()
 {
     static QSharedPointer<QNanoPainter> s_nano = QSharedPointer<QNanoPainter>::create();
+    // This is done because the app would crash on exit otherwise, that is because
+    // in QNanoPainter destructor some OpenGL functions are called by NanoVG and
+    // since QOpenGLContext is already null at that point it would crash and
+    // leak memory.
+    // This connection prevents that behaviour since it destroys QNanoPainter
+    // when QOpenGLContext is still valid.
+    QObject::connect(qGuiApp, &QGuiApplication::lastWindowClosed,
+                     [&]() { s_nano.clear(); });
     return s_nano;
 }
 

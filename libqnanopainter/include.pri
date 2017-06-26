@@ -6,7 +6,7 @@ INCLUDEPATH += $$PWD/
 CONFIG += c++11
 
 win32  {
-    QT_CONFIG += opengles2 angle
+#    QT_CONFIG += opengles2 angle
 }
 
 # Enable this to get drawind debug information
